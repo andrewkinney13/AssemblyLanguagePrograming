@@ -1,52 +1,64 @@
 ;Name: Andrew Kinney
-;Description: Adds two arrays together at each element
-;Date: 9.24.2021
+;Description: Uses a structure to store x and y data members inputted by the user,
+			  uses those points to position the cursor on the console window ini that location
+;Date: 12.7.2021
 ;Course: Assembly Language Programming
-;Assignment: n/a
+;Assignment: Final Review, Practice Set 2, Problem 1
 
-;include Irvine32.inc
+include Irvine32.inc
+include macros.inc
 .386 ;x86 architecture, SEMI COLONS ARE COMMENTS
 .model flat,stdcall
 .stack 4096 ;4KB, how many bits basically
 ExitProcess proto,dwExitCode:dword
 
+;prototypes
+point struct
+		x dword ?
+		y dword ?
+	point ends	;end structutre
+
 .data ;VARIABLE DECLARATIONS
 
-A byte 01d, 02d, 03d, 04d, 05d
-B byte 06d, 07d, 08d, 09d, 010d
-D byte 00d, 00d, 00d, 00d, 00d
+	p point <0,0>
 
 .code
-main proc ;
-	
-	mov eax, 0
-	mov ebx, 0
-	mov ecx, 5
+main proc 
 
-	L1:
-		mov al, A[ebx]
-		add al, B[ebx]
-		mov D[ebx], al
-		inc bl
-		loop L1
+	call resetRegisters
 
-	mov eax, 0
-	mov ebx, 0
-	mov ecx, 5
+	mWrite"Enter the X: "
+	call ReadDec
+	mov p.x, eax
 
-	L2:
-		mov al, D[ebx]
-		inc ebx
-		loop L2
+	mWrite"Enter the Y: "
+	call ReadDec
+	mov p.y, eax
 
+	call GetMaxXY
+	mov eax, p.x
+	mov dl, al			;column
+	mov eax, p.y		;row
+	mov dh, al         
+	call Gotoxy		    ;to position the cursor
+	mWrite"CURSOR HERE!"
 
 endProgram:
+
+;call DumpRegs
+
 invoke ExitProcess,0 ;just means return 0, exit_success 	
 main endp
 
 ;FUNCTION ZONE
 
-
-
+resetRegisters proc
+	;reset registers
+	mov eax, 0
+	mov ebx, 0
+	mov ecx, 0
+	mov edx, 0
+ret
+resetRegisters endp
 
 end main
